@@ -76,8 +76,20 @@ float4 PS(VS_OUT inData) : SV_Target
 	float4 NL = dot(inData.normal, normalize(lightPosition));
 	//float4 NL = saturate(dot(inData.normal, normalize(lightPosition)));
 
-	float4 reflect = normalize(2 * NL * inData.normal - normalize(lightPosition));
-	float4 specular = pow(saturate(dot(reflect, normalize(inData.eyev))), 8);
+	//ŠK’²•ÏŠ·
+	float4 tonedColor;
+	if (inData.color.x < 1 / 3.0)
+	{
+		tonedColor = float4(0,0,0,1.0);
+	}
+	else if (inData.color.x < 2 / 3.0)
+	{
+		tonedColor = float4(0.5,0.5,0.5,1.0);
+	}
+	else
+	{
+		tonedColor = float4(1,1,1,1);
+	}
 
 	if (isTexture == false)
 	{
@@ -90,5 +102,7 @@ float4 PS(VS_OUT inData) : SV_Target
 		ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambentSource;
 	}
 
-    return diffuse + ambient + specular;
+	return tonedColor;
+
+    //return diffuse + ambient + specular;
 }
